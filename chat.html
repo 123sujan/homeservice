@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Keyboard Input for chat-bubble</title>
+
+	<!-- for mobile screens -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- stylesheets are conveniently separated into components -->
+	<link rel="stylesheet" media="all" href="setup.css">
+	<link rel="stylesheet" media="all" href="says.css">
+	<link rel="stylesheet" media="all" href="reply.css">
+	<link rel="stylesheet" media="all" href="typing.css">
+	<link rel="stylesheet" media="all" href="input.css">
+	<style>
+	body {
+		background: #ffe6b3;
+	}
+	.bubble-container {
+		height: 100vh;
+	}
+	.bubble-container .input-wrap textarea {
+		margin: 0;
+		width: calc(100% - 30px);
+	}
+	</style>
+</head>
+<body>
+
+<!-- container element for chat window -->
+<div id="chat"></div>
+
+<!-- import the JavaScript file -->
+<script src="Bubbles.js"></script>
+<script>
+// initialize by constructing a named function...
+// ...and add text processing plugin:
+var chatWindow = new Bubbles(document.getElementById("chat"), "chatWindow", {
+  // the one that we care about is inputCallbackFn()
+  // this function returns an object with some data that we can process from user input
+  // and understand the context of it
+
+  // this is an example function that matches the text user typed to one of the answer bubbles
+  // this function does no natural language processing
+  // this is where you may want to connect this script to NLC backend.
+  inputCallbackFn: function(o) {
+    // add error conversation block & recall it if no answer matched
+    var miss = function() {
+      chatWindow.talk(
+        {
+          "i-dont-get-it": {
+            says: [
+              "Sorry, I don't get it 😕. "
+            ],
+            reply: o.convo[o.standingAnswer].reply
+          }
+        },
+        "i-dont-get-it"
+      )
+    }
+
+    // do this if answer found
+    var match = function(key) {
+      setTimeout(function() {
+        chatWindow.talk(convo, key) // restart current convo from point found in the answer
+      }, 600)
+    }
+
+    // sanitize text for search function
+    var strip = function(text) {
+      return text.toLowerCase().replace(/[\s.,\/#!$%\^&\*;:{}=\-_'"`~()]/g, "")
+    }
+
+    // search function
+    var found = false
+    o.convo[o.standingAnswer].reply.forEach(function(e, i) {
+      strip(e.question).includes(strip(o.input)) && o.input.length > 0
+        ? (found = e.answer)
+        : found ? null : (found = false)
+    })
+    found ? match(found) : miss()
+  }
+}) // done setting up chat-bubble
+
+// conversation object defined separately, but just the same as in the
+// "Basic chat-bubble Example" (1-basics.html)
+var convo = {
+  ice: {
+    says: ["Hi", "Would you like to look at Services or Queries?"],
+    reply: [
+      {
+        question: "Services",
+        answer: "services"
+      },
+      {
+        question: "Queries",
+        answer: "queries"
+      }
+    ]
+  },
+
+
+
+ plumbing: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Roof Cleaning",
+	 answer: "roof"
+       },
+       	{
+	 question: "Water leakage",
+	 answer: "water"
+       },
+        {
+	 question: "Pipe/Tap fitting",
+	 answer: "pipe"
+       },
+         {
+	 question: "Instalaltion Services",
+	 answer: "install"
+       },
+        {
+	 question: "Sink Replacement",
+	 answer: "sink"
+       },
+        {
+	 question: "Repairs and Fixes",
+	 answer: "repairs"
+       }
+      ]
+     },
+
+	roof: {
+	says: ["Roof cleaning is the process of removing algae, mold, mildew, lichen and moss from roofs. Also cleaning oxidation on metal roofs.Cleaning can extend the duration of a roof's ability to function.",
+      "Thank You",
+  ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+	water: {
+	says: ["Leaks from pipes, plumbing fixtures and fittings are a significant source of water waste for many households.Some leaks are obvious, such as dripping faucets and leaking water heaters.",
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	pipe: {
+	says: ["Fitting or adapter is used in pipe systems to connect straight sections of pipe or tube, adapt to different sizes or shapes, and for other purposes such as regulating fluid flow."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	install: {
+	says: ["Installation Services means all those services ancillary to the supply of the Plant and Equipment for the Facilities, to be provided by the Contractor under the Contract; e.g., transportation and provision of marine or other similar insurance, inspection, expediting, Site preparation works.",
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	sink: {
+	says: ["Sink replacement is a straightforward project that you can probably tackle yourself. After turning off the water supply, remove the sink by taking apart the pipes, cutting the caulk, and undoing the sink's clamps.",
+      "Thank You",],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	repairs: {
+	says: ["Repair, patch, rebuild mean to put into good order something that is injured, damaged, or defective. mend implies making whole or sound something broken, torn, or injured. mended the torn dress repair applies to the fixing of more extensive damage or dilapidation."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	cleaning: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Pest Control",
+	 answer: "pest"
+       },
+       	{
+	 question: "Home Sanitization",
+	 answer: "home"
+       },
+        {
+	 question: "Bathroom Cleaning",
+	 answer: "bath"
+       },
+         {
+	 question: "Sofa Cleaning",
+	 answer: "sofa"
+       },
+        {
+	 question: "Home Deep Cleaning",
+	 answer: "deep"
+       },
+        {
+	 question: "Kitchen Cleaning",
+	 answer: "kit"
+       }
+      ]
+     },
+
+
+	pest: {
+	says: ["They include insecticides used for insect control, herbicides used for weed control, fungicides used for fungi and mould control, and rodenticides used for rodent control. Household pests can include insects such as flies, cockroaches and mosquitoes, or rodents like mice or rats."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	home: {
+	says: ["First, wash surfaces with soap and warm, clean water to remove dirt and debris. Next, sanitize surfaces with household bleach."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	bath: {
+	says: ["Dust the room, and spray bathroom cleaner on all of the surfaces, including the shower, sink, and exterior of the toilet. Clean each area with its own designated sponge or towel to prevent the spread of germs. Scrub the toilet bowl and flush before sweeping and mopping the floor."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	sofa: {
+	says: ["Sofa cleaning  is the process of cleaning the fabric that upholsters your furniture. But the process is more difficult than it might sound at first. For one thing, upholstery is often made up of relatively delicate natural fabrics like cotton."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	deep: {
+	says: ["Deep cleaning is different from regular or spring cleaning because it reaches the deep grime and dirt in your home. It covers areas which aren't traditionally covered by a regular or spring clean for example: behind kitchen appliances like the washing machine and oven, cutting through the grime that builds up."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	kit: {
+	says: ["To clean a kitchen, start by cleaning all of the appliances, like the oven, microwave, and stovetop, by wiping them down with a soapy cloth or sponge. Next, wash any dishes in the sink and clean the sink with a sponge and some white vinegar. Finish up by sweeping and mopping the floors."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	massage: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Massage for Women",
+	 answer: "women"
+       },
+       	{
+	 question: "Massage for Men",
+	 answer: "men"
+       },
+        {
+	 question: "Massage for infants",
+	 answer: "infants"
+       }
+      ]
+     },
+
+
+	women: {
+	says: ["Start at her shoulders and then move to the muscles at the base of her neck before working down each arm. Gently pinch (between your thumb and fingers), squeeze, and knead her skin. If she winces, lighten up; she should be completely relaxed."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	men: {
+	says: ["Begin with your hands parallel to each other and slide them down each side of the spine, massaging all the way down to the lower back and over the buttocks. Then slide your hands up all the way to the neck, over the shoulders, and down the arms to the fingertips. Repeat this motion at least six times."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	infants: {
+	says: ["Infant massage is a type of complementary and alternative treatment that uses massage therapy for babies. Evidence is insufficient to support its use in either full term or preterm babies to achieve physical growth."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+	electritian: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Earthing",
+	 answer: "earth"
+       },
+       	{
+	 question: "Electrical wiring",
+	 answer: "elec"
+       },
+        {
+	 question: "Installation Services",
+	 answer: "install"
+       },
+         {
+	 question: "Repairs and Fixes",
+	 answer: "repairs"
+       },
+        {
+	 question: "Smart Security Cam Installation",
+	 answer: "smart"
+       },
+        {
+	 question: "Light Switch Installation",
+	 answer: "light"
+       }
+      ]
+     },
+
+
+	earth: {
+	says: ["In an electrical installation, an earthing system or grounding system connects specific parts of that installation with the Earth's conductive surface for safety and functional purposes. The point of reference is the Earth's conductive surface."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	elec: {
+	says: ["Electrical wiring is an electrical installation of cabling and associated devices such as switches, distribution boards, sockets, and light fittings in a structure. Wiring is subject to safety standards for design and installation."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	smart: {
+	says: ["An average security system installation will cost about $1,500. The price for professional installation can vary drastically depending on system type and number of cameras. On top of equipment costs, each camera will range between $100 to $200 for professional installation."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	light: {
+	says: ["Turn off the power to the switch at the main circuit breaker or fuse panel. Unscrew and remove the switch plate; then use a voltage tester to make sure that the circuit is dead. Unscrew the switch from the electrical box and pull it out with the wires still attached."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+	saloon: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Pedicure/Medicure",
+	 answer: "pedi"
+       },
+       	{
+	 question: "Hair cut/Coloring",
+	 answer: "hair"
+       },
+        {
+	 question: "Facial",
+	 answer: "facial"
+       },
+         {
+	 question: "Waxing/Threading",
+	 answer: "wax"
+       },
+        {
+	 question: "Makeup/Hairstyle",
+	 answer: "makeup"
+       },
+        {
+	 question: "Skin Care Treatment",
+	 answer: "skin"
+       }
+      ]
+     },
+
+
+	pedi: {
+	says: ["A manicure is a cosmetic beauty treatment for the fingernails and hands performed at home or in a nail saloon.A pedicure Beauty treatments for the feet and toenails. Pedicures include care not only for the toenails; dead skin cells are rubbed off the bottom of the feet using a rough stone."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	hair: {
+	says: ["Hair coloring, or hair dyeing, is the practice of changing the hair color. The main reasons for this are cosmetic: to cover gray or white hair, to change to a color regarded as more fashionable or desirable, or to restore the original hair color after it has been discolored by hairdressing processes or sun bleaching."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	facial: {
+	says: ["A facial is a family of skin care treatments for the face, including steam, exfoliation, extraction, creams, lotions, facial masks, peels, and massage. They are normally performed in beauty salons, but are also a common spa treatment. They are used for general skin health as well as for specific skin conditions."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	wax: {
+	says: ["Waxing and threading both have the aim of removing the entire hair from the follicle, providing about four weeks' worth well-shaped brows with no strays. Threading uses a string to remove hair, while waxing involves placing a resin on the skin and then taking it off to banish strays and shape the brows."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	makeup: {
+	says: [" Cosmetics such as lipstick or powder applied to the face, used to enhance or alter the appearance. A particular way in which a person's hair is cut or arranged."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	skin: {
+	says: ["Skin care is a routine daily procedure in many settings, such as skin that is either too dry or too moist, and prevention of dermatitis and prevention of skin injuries. Skin care is a part of the treatment of wound healing, radiation therapy and some medications."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	painting: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Base Board Painting",
+	 answer: "base"
+       },
+       	{
+	 question: "Interior Painting",
+	 answer: "interior"
+       },
+        {
+	 question: "Bedroom Painting",
+	 answer: "bedroom"
+       },
+         {
+	 question: "Door Painting",
+	 answer: "door"
+       },
+        {
+	 question: "Crown molding",
+	 answer: "crown"
+       },
+        {
+	 question: "Accent wall Painting",
+	 answer: "accent"
+       }
+      ]
+     },
+
+
+	
+	base: {
+	says: ["Painting interior trim such as window or door casing and crown molding nearly always guarantees that your room will look fresher and neater. The same idea holds true for baseboards. Painting your baseboards is one of the best remodeling projects you can do for a room and it only takes a day or two."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	
+	interior: {
+	says: ["Interior paint is made to be scrubbed, resist staining, and allow cleaning. Exterior paints are made to combat against fading and mildew."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	
+	bedroom: {
+	says: ["For a relaxing atmosphere in your bedroom, look to cooler hues shades of gray, blue, green and purple to lend a hand. These colors have been shown to reduce stress and anxiety. They can also make a space seem more expansive, so they're a great choice if your bedroom is on the small side."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	
+	door: {
+	says: ["Doors take a lot of use and abuse, so when painting them, choose a durable paint finish that has a semigloss or gloss sheen. Semigloss or gloss makes cleaning easier and holds up to frequent cleaning."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	
+	crown: {
+	says: ["First, cut in the ceiling and roll it; then paint crown molding; after the molding has dried completely, cut in each wall and roll it. If you're painting the crown molding a light color, apply two coats of paint to ensure good coverage."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	
+	accent: {
+	says: ["An accent wall is a wall painted a different color from the rest of the room and will naturally garner attention. Choosing the right wall will highlight an already prominent feature of the room. It's best to select a wall in an open area that has lots of light, either natural or artificial."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	smarthome: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Smart Home Hub Setup",
+	 answer: "hub"
+       },
+       	{
+	 question: "Smart Device Installation",
+	 answer: "device"
+       },
+        {
+	 question: "Smart Lock Installation",
+	 answer: "lock"
+       },
+         {
+	 question: "Smart Thermostat Installation",
+	 answer: "thermo"
+       },
+        {
+	 question: "Video Doorbell Installation",
+	 answer: "video"
+       },
+        {
+	 question: "Wifi Router Installation",
+	 answer: "wifi"
+       }
+      ]
+     },
+
+
+	hub: {
+	says: ["Set up the Connect Home hub. With the Samsung Connect Home hub, you you can transform your Wi-Fi network and experience corner-to-corner coverage. You can also connect the hub to SmartThings, where you'll be able to connect and control compatible devices like lights, security devices, and more."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	device: {
+	says: ["Home automation is the next step in technology becoming more integrated into our everyday lives. While some products are being sold to the consumer as ‘plug and play' items, the truth is that many need professional installation to ensure that they are configured correctly and work properly."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	lock: {
+	says: ["Smart locks replace standard locks with an electronic device, often battery-powered, that can be accessed using a phone app, digital keypad or even fingerprint sensors. Using a smartphone, you can turn the lock via Bluetooth if you're nearby, or remotely over a secure network if you're not."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	thermo: {
+	says: ["Thermostat technology has come a long way – today's thermostats give users so many options, even the option of effortless comfort control through smart features. Smart thermostat installation in your home helps you create the ultimate smart home, with precision control over indoor comfort and energy consumption."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	video: {
+	says: ["Feed the two cable ends through the back of the doorbell and mount the doorbell to the wall. Connect the two black wires together, using a wire nut. Connect the two white wires to the terminal screws on the doorbell."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	wifi: {
+	says: ["Routers and wireless routers enable you to share your broadband internet connection with multiple devices. To do so, you will need to connect your broadband modem to the router. For best results, place your router near your modem. Connect the router and the modem with an Ethernet cable."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	handyman: {
+    says: ["These are some of the sub-services which we are going to provide"],
+    reply: [
+       {
+	 question: "Air Conditioner Installation/Uninstallation",
+	 answer: "air"
+       },
+       	{
+	 question: "Carpentry/Repairs",
+	 answer: "car"
+       },
+        {
+	 question: "Furniture Assembly",
+	 answer: "fur"
+       },
+         {
+	 question: "Knobs Installation",
+	 answer: "knobs"
+       },
+        {
+	 question: "Locks Installation",
+	 answer: "locks"
+       },
+        {
+	 question: "Moving",
+	 answer: "mov"
+       }
+      ]
+     },
+
+
+	air: {
+	says: ["Air conditioning can be used in both domestic and commercial environments.Electric refrigerant-based AC units range from small units that can cool a small bedroom, which can be carried by a single adult, to massive units installed on the roof of office towers that can cool an entire building."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	car: {
+	says: ["Carpentry is a skilled trade and a craft in which the primary work performed is the cutting, shaping and installation of building materials during the construction of buildings, ships, timber bridges, concrete formwork, etc."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	fur: {
+	says: ["Ready-to-assemble furniture (RTA), also known as knock-down furniture (KD), flat pack furniture, or kit furniture, is a form of furniture that requires customer assembly. The furniture is generally simple to assemble with basic tools such as screwdrivers, which are also sometimes included."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	knobs: {
+	says: ["Insert the knob’s latch into the side of the door. Make sure the tapered side of the latch is facing the door frame. Screw the latch plate into the door."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	locks: {
+	says: ["Smart locks replace standard locks with an electronic device, often battery-powered, that can be accessed using a phone app, digital keypad or even fingerprint sensors. Using a smartphone, you can turn the lock via Bluetooth if you're nearby, or remotely over a secure network if you're not."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	mov: {
+	says: ["A moving company, removalist or van line is a company that helps people and businesses move their goods from one place to another. It offers all-inclusive services for relocations like packing, loading, moving, unloading, unpacking, arranging of items to be shifted."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+  "services": {
+    says: ["These are some of the services which we are going to provide"],
+    reply: [
+      {
+        question: "Plumbing",
+        answer: "plumbing"
+      },
+      {
+        question:"Cleaning",
+	answer: "cleaning"
+      },
+	{
+        question: "Massage",
+        answer: "massage"
+      },
+	{
+        question: "Electritian",
+        answer: "electritian"
+      },
+	{
+        question: "Saloon",
+        answer: "saloon"
+      },
+	{
+        question: "Painting",
+        answer: "painting"
+      },
+	{
+        question: "Smart Home",
+        answer: "smarthome"
+      },
+	{
+        question: "Handyman",
+        answer: "handyman"
+      }
+    ]
+  },
+
+	
+
+
+  "queries": {
+    says: ["These are some of the common queries regarding the project"],
+    reply: [
+      {
+        question: "Why should I sign up",
+        answer: "sign"
+      },
+      {
+        question: "How to book a service?",
+        answer: "book"
+      },
+      {
+        question: "How to know if my request is confirmed?",
+        answer: "req"
+      },
+      {
+        question: "How can I contact the professional?",
+        answer: "contact"
+      },
+      {
+        question: "What’s the best way to get the soonest appointment—by calling, or scheduling online?",
+        answer: "calls"
+      },
+      {
+        question: "Who conducts my maintenance appointments?",
+        answer: "main"
+      },
+      {
+        question: "How will my appointment be confirmed if I schedule it online?",
+        answer: "appoint"
+      },
+      {
+        question: "What if something goes wrong, or if I am not satisfied with service?",
+        answer: "wrong"
+      }
+    ]
+  },
+
+	sign: {
+	says: ["We believe there are three key reasons you should consider:<br/>1. we take care of the preventive maintenance that is often neglected but that is needed to keep your home in prime condition.<br/>2. we free up the valuable time you might otherwise waste waiting for a repair man or searching the yellow pages for a painter.<br/>3. we give you a trusted single source for dealing with anything that goes wrong in your home."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+	book: {
+	says: ["You can follow the below steps to book a service:<br/>1.Search for the category you need.<br/>2.Open the category and follow the instructions as you go forward.<br/>3.Once you have booked the service, wait for a professional to be assigned. A verified and trained professional will be assigned.<br/>4.The assigned professional will reach the address you have provided and deliver the service."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	req: {
+	says: ["Once you place a booking, you will receive a confirmation via email informing you that the booking has been accepted. A verified professional will be assigned."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+	contact: {
+	says: ["Contact details of the professionals are shared with you in the projects section of your app. Open your project, select the professional you want to speak to and call the professional"
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	calls: {
+	says: ["You’ll get the same appointment availability, regardless of whether you book online or call. Booking online is easy, and usually takes less time than calling."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	main: {
+	says: ["We have a team of skilled technicians who conduct the monthly maintenance appointments. Once you sign on with us, we will assign a technician."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	appoint: {
+	says: ["You’ll receive several confirmations for your repair appointment. First, we’ll send a confirmation number via email (and text, if you’ve opted into text alerts) as soon as you book your service online. One day prior to your scheduled  by email and either text or phone call. Then on the day of your service, you can visit booking Page to view an updated two-hour window. Finally, your technician will contact you when on the way to your home."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+
+
+
+	wrong: {
+	says: ["We have a team of skilled technicians who conduct the monthly maintenance appointments. Once you sign on with us, we will assign a technician."
+  ,
+      "Thank You",
+      ],
+	reply: [
+      {
+	question: "Start Over Again",
+	answer: "ice"
+      }
+     ]
+    },
+}
+
+// pass JSON to your function and you're done!
+chatWindow.talk(convo)
+</script>
+</body>

@@ -1,0 +1,5 @@
+curl -i -s -k -X $'POST' \
+    -H $'Host: d.facebook.com' -H $'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0' -H $'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'Referer: https://d.facebook.com/' -H $'Content-Type: application/x-www-form-urlencoded' -H $'Content-Length: 149' -H $'Origin: https://d.facebook.com' -H $'Connection: close' -H $'Cookie: datr=usdiXIOARUTObk9J30vpRpX0; sb=PshiXFQRC2t5nedDZLjWFZel; fr=1qyoKS59hWNYwcgxz..Bdz5ft.cT.AAA.0.0.Bdz5m0.AWX725t8; wd=1920x951' -H $'Upgrade-Insecure-Requests: 1' \
+    -b $'datr=usdiXIOARUTObk9J30vpRpX0; sb=PshiXFQRC2t5nedDZLjWFZel; fr=1qyoKS59hWNYwcgxz..Bdz5ft.cT.AAA.0.0.Bdz5m0.AWX725t8; wd=1920x951' \
+    --data-binary $'lsd=AVpED_aP&jazoest=2672&m_ts=1573886484&li=FJrPXVzPvYTkCgv2e0IWLyRR&try_number=0&unrecognized_tries=0&email=8970762594&pass=fake%40123&login=Log+In' \
+    $'https://d.facebook.com/login/device-based/regular/login/?refsrc=https%3A%2F%2Fd.facebook.com%2F&lwv=100&refid=8' |grep face
